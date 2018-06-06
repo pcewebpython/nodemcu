@@ -71,7 +71,7 @@ def main():
             handler = handlers[path.strip('/').split('/')[0]]
             response = handler()
         except KeyError:
-            response = 404_response
+            response = response_404 
 
         # A handler returns an entire response in the form of a multi-line string.
         # This breaks up the response into single strings, byte-encodes them, and

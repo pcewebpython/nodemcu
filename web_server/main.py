@@ -64,14 +64,17 @@ def main():
 
         # The first line of a request looks like "GET /arbitrary/path/ HTTP/1.1".
         # This grabs that first line and whittles it down to just "/arbitrary/path/"
-        path = req.decode().split("\r\n")[0].split(" ")[1]
 
         try:
             # Given the path, identify the correct handler to use
+            path = req.decode().split("\r\n")[0].split(" ")[1]
             handler = handlers[path.strip('/').split('/')[0]]
             response = handler()
         except KeyError:
             response = 404_response
+        except Exception as e:
+            response = ""
+            print(str(e))
 
         # A handler returns an entire response in the form of a multi-line string.
         # This breaks up the response into single strings, byte-encodes them, and

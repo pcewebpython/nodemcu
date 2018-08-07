@@ -3,6 +3,16 @@ try:
 except:
     import socket
 
+response_404 = """HTTP/1.0 404 NOT FOUND
+
+<h1>404 Not Found</h1>
+"""
+
+response_500 = """HTTP/1.0 500 INTERNAL SERVER ERROR
+
+<h1>500 Internal Server Error</h1>
+"""
+
 response_template = """HTTP/1.0 200 OK
 
 %s
@@ -28,6 +38,16 @@ def time():
 
     return response_template % body
 
+def dummy():
+    body = "This is a dummy endpoint"
+
+    return response_template % body
+
+handlers = {
+    'time': time,
+    'dummy': dummy,
+}
+
 def main():
     s = socket.socket()
     ai = socket.getaddrinfo("0.0.0.0", 8080)
@@ -47,7 +67,15 @@ def main():
         print("Request:")
         print(req)
 
-        response = time()
+        try:
+            path = req.decode().split("\r\n")[0].split(" ")[1]
+            handler = handlers[path.strip('/').split('/')[0]]
+            response = handler()
+        except KeyError:
+            response = response_404
+        except Exception as e:
+            response = response_500
+            print(str(e))
 
         client_s.send(b"\r\n".join([line.encode() for line in response.split("\n")]))
 

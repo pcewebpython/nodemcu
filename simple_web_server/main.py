@@ -23,8 +23,11 @@ import ntptime, utime
 from machine import RTC
 from time import sleep
 
-seconds = ntptime.time()
 rtc = RTC()
+try:
+    seconds = ntptime.time()
+except:
+    seconds = 0
 rtc.datetime(utime.localtime(seconds))
 
 def time():
@@ -60,6 +63,7 @@ def main():
     print("Listening, connect your browser to http://<this_host>:8080")
 
     while True:
+        sleep(.1)
         res = s.accept()
         client_s = res[0]
         client_addr = res[1]

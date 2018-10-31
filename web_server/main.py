@@ -23,9 +23,13 @@ import ntptime, utime
 from machine import RTC
 from time import sleep
 
-#seconds = ntptime.time()
-#rtc = RTC()
-#rtc.datetime(utime.localtime(seconds))
+try:
+    seconds = ntptime.time()
+except:
+    seconds = 0
+
+rtc = RTC()
+rtc.datetime(utime.localtime(seconds))
 
 def time():
     body = """<html>
@@ -45,14 +49,9 @@ def dummy():
 
 pin = machine.Pin(10, machine.Pin.IN)
 
-def switch():
-    body = "{state: " + str(pin.value()) + "}"
-    return response_template % body
-
 handlers = {
     'time': time,
     'dummy': dummy,
-    'switch': switch,
 }
 
 def main():

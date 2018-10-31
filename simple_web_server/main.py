@@ -10,6 +10,7 @@ response_template = """HTTP/1.0 200 OK
 import machine
 import ntptime, utime
 from machine import RTC
+from time import sleep
 
 rtc = RTC()
 try:

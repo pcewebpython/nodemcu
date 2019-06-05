@@ -36,31 +36,3 @@ for connection in connections:
         break
     else:
         print("Connection could not be made.\n")
-
-
-
-builtin_led = machine.Pin(16, machine.Pin.OUT)
-
-def blink(length):
-    builtin_led.value(0)
-    time.sleep(length)
-    builtin_led.value(1)
-
-if sta_if.isconnected():
-    ip = sta_if.ifconfig()[0].split('.')[3]
-    print("Connected as: {}".format(ip))
-
-
-    for digit in ip:
-        blink(.1)
-        time.sleep(.1)
-        blink(.1)
-        time.sleep(2)
-
-        for i in range(int(digit)):
-            blink(.5)
-            time.sleep(.5)
-
-        time.sleep(2)
-        
-        

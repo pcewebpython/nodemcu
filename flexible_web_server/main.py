@@ -20,10 +20,12 @@ response_template = """HTTP/1.0 200 OK
 
 import machine
 import ntptime, utime
-from machine import RTC
+from machine import RTC, Pin
 from time import sleep
 
 rtc = RTC()
+led = Pin(9, Pin.OUT)
+
 try:
     seconds = ntptime.time()
 except:
@@ -46,9 +48,21 @@ def dummy():
 
     return response_template % body
 
+def light_on():
+    led.value(1)
+    body = "You turned a light on!"
+    return response_template % body
+
+def light_off():
+    led.value(0)
+    body = "You turned a light off!"
+    return response_template % body
+
 handlers = {
     'time': time,
     'dummy': dummy,
+    'light_on': light_on,
+    'light_off': light_off,
 }
 
 def main():

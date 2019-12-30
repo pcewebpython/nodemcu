@@ -22,9 +22,11 @@ import machine
 import ntptime, utime
 from machine import RTC, Pin
 from time import sleep
+import ujson
 
 rtc = RTC()
 led = Pin(9, Pin.OUT)
+switch_pin = Pin(10, Pin.IN)
 
 try:
     seconds = ntptime.time()
@@ -58,11 +60,20 @@ def light_off():
     body = "You turned a light off!"
     return response_template % body
 
+def switch():
+    """returns switch state"""
+    switch_state = switch_pin.value()
+    body = "The swtich is {}".format(switch_state)
+    return response_template % body
+
+
+
 handlers = {
     'time': time,
     'dummy': dummy,
     'light_on': light_on,
     'light_off': light_off,
+    'switch': switch,
 }
 
 def main():

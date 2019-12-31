@@ -22,11 +22,12 @@ import machine
 import ntptime, utime
 from machine import RTC, Pin
 from time import sleep
-import ujson
 
 rtc = RTC()
 led = Pin(9, Pin.OUT)
 switch_pin = Pin(10, Pin.IN)
+temp_pin = machine.ADC(0)
+print(temp_pin.read())
 
 try:
     seconds = ntptime.time()
@@ -66,6 +67,10 @@ def switch():
     body = "The swtich is {}".format(switch_state)
     return response_template % body
 
+def temperature():
+    """measures the value of temp from our sensor"""
+    body = "{value: " + str(temp_pin.read()) + "}"
+    return response_template % body
 
 
 handlers = {
@@ -74,6 +79,7 @@ handlers = {
     'light_on': light_on,
     'light_off': light_off,
     'switch': switch,
+    'temperature': temperature,
 }
 
 def main():

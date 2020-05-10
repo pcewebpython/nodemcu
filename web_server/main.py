@@ -39,20 +39,60 @@ def time():
 </body>
 </html>
 """ % str(rtc.datetime())
-
     return response_template % body
 
 def dummy():
     body = "This is a dummy endpoint"
-
     return response_template % body
+# ------------------------------------
 
-pin = machine.Pin(10, machine.Pin.IN)
+on_off_pin = machine.Pin(16, machine.Pin.OUT)
+
+def light_on():
+     on_off_pin.value(0)
+     body = "You turned a light on!"
+     return response_template % body
+
+def light_off():
+     on_off_pin.value(1)
+     body = "You turned a light off!"
+     return response_template % body
+# ------------------------------------
+
+switch_pin = machine.Pin(5, machine.Pin.IN)
+def switch():
+     body = "{state: " + str(switch_pin.value()) + "}"
+     return response_template % body
+
+# Port 10 is always in high impedance mode on my microcontroller,
+# which prevents wifi connection to router. Instead, I used port 5 (GPI05). 
+# ------------------------------------
+
+adc_pin = machine.ADC(0)
+def light():
+     body = "{value: " + str(adc_pin.read()) + "}"
+     return response_template % body
+# ------------------------------------
+
+pwm_pin = machine.PWM(machine.Pin(13))
+dty=500
+
+def pwm():
+    pwm_pin.duty(dty) 
+    body = "{pwm duty: " + str(dty) + "}"
+    return response_template % body 
+# ------------------------------------
 
 handlers = {
     'time': time,
     'dummy': dummy,
-}
+    'light_on': light_on,
+    'light_off': light_off,
+    'switch': switch,
+    'light': light,
+    'pwm': pwm,
+    }
+# -------------------------------------
 
 def main():
     s = socket.socket()
@@ -66,6 +106,7 @@ def main():
     print("Listening, connect your browser to http://<this_host>:8080")
 
     while True:
+        sleep(0.5)
         res = s.accept()
         client_s = res[0]
         client_addr = res[1]
@@ -87,5 +128,6 @@ def main():
 
         client_s.close()
         print()
-
+# -------------------------------------
 main()
+

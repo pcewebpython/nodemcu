@@ -7,7 +7,8 @@ import network
 import time
 import machine
 
-sta_if = network.WLAN(network.STA_IF); sta_if.active(True)
+sta_if = network.WLAN(network.STA_IF)
+sta_if.active(True)
 
 try:
     with open("passwords.txt") as f:
@@ -24,8 +25,9 @@ for connection in connections:
 
     sta_if.connect(station, password)
 
-    for i in range(15):
-        print(".")
+    #for i in range(15):
+    for i in range(30):
+        print(".", end=' ')
 
         if sta_if.isconnected():
             break

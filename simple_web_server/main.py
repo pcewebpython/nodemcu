@@ -44,13 +44,13 @@ def time():
 # dummy view
 def dummy():
     body = "This is a dummy endpoint"
-    return response_templage % body
+    return response_template % body
 
 # routing dictionary for different view functions.
-handlers = [
+handlers = {
     'time': time,
     'dummy': dummy,
-]
+}
 
 def main():
     s = socket.socket()
@@ -61,10 +61,12 @@ def main():
 
     s.bind(addr)
     s.listen(5)
-    print("Listening, connect your browser to http://<this_host>:8080/")
+    print("Listening, connect your browser to http://", end='')
+    print(addr)
 
     while True:
         sleep(.5)
+        print("Before accept")
         res = s.accept()
         client_s = res[0]
         client_addr = res[1]

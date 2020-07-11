@@ -38,3 +38,5 @@ for connection in connections:
         break
     else:
         print("Connection could not be made.\n")
+if sta_if.isconnected():
+    print("\nConnected as: {}".format(sta_if.ifconfig()[0]))

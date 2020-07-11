@@ -1,0 +1,21 @@
+DC motor control over WiFi
+1. The NodeMCU board pin 12 and pin 13 is connected to the motor driver (L293D)
+pin 2 and pin 7 to control the motor rotating forward or backward or stop.
+The pin values corresponding to motor direction is as follows:
+Pin2 = 0 Pin7 = 0 ---> motor stop
+Pin2 = 1 Pin7 = 0 ---> motor forward
+Pin2 = 0 Pin7 = 1 ---> motor backward
+There are four buttons on our motor control web page for controlling motor's
+on/off/forward/backward.
+
+2. The speed of the motor is also controlled by sending different PWM duty cycle
+through pin14 to the L293D enable pin.
+We have four button on our motor control web page for controlling the speed:
+25 duty cycle, 50 duty cycle, 75 duty cycle and 100 duty cycle.
+
+3. The speed of the motor can also be controlled by a position transducer using
+the only analog input pin A0. The analogy input pin converts the position
+transducer voltage output into digital value(0, 1023). This digital value is then
+used as input parameter for the pwm.duty() function to control the speed of the
+motor seamlessly. We have a button on our motor control web page to test this
+stepless speed control.

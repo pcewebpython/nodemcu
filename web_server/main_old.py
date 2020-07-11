@@ -12,24 +12,25 @@ response_500 = """HTTP/1.0 500 INTERNAL SERVER ERROR
 
 <h1>500 Internal Server Error</h1>
 """
+
 response_template = """HTTP/1.0 200 OK
 
 %s
 """
+
 import machine
-import ntptime
-import utime
+import ntptime, utime
 from machine import RTC
 from time import sleep
 
-rtc = RTC()
 try:
     seconds = ntptime.time()
 except:
     seconds = 0
+
+rtc = RTC()
 rtc.datetime(utime.localtime(seconds))
 
-# time view
 def time():
     body = """<html>
 <body>
@@ -41,12 +42,13 @@ def time():
 
     return response_template % body
 
-# dummy view
 def dummy():
     body = "This is a dummy endpoint"
+
     return response_template % body
 
-# routing dictionary for different view functions.
+pin = machine.Pin(10, machine.Pin.IN)
+
 handlers = {
     'time': time,
     'dummy': dummy,
@@ -61,12 +63,9 @@ def main():
 
     s.bind(addr)
     s.listen(5)
-    print("Listening, connect your browser to http://", end='')
-    print(addr)
+    print("Listening, connect your browser to http://<this_host>:8080")
 
     while True:
-        sleep(.5)
-        print("Before accept")
         res = s.accept()
         client_s = res[0]
         client_addr = res[1]
@@ -74,20 +73,9 @@ def main():
         print("Request:")
         print(req)
 
-        # This first line of a request looks like "GET /arbitrary/path/ HTTP/1.1 "
-        # It has three parts and seperated by a space char (' ').
-        # So the first part is the GET method, second is the path, the third is the
-        # HTTP version used. We only need the second part.
-        # The first line of a request is: req.decode().split('\r\n')[0]
-        # The second part of first line is:
-        # req.decode().split('\r\n')[0].split(" ")[1]
         try:
-            path = req.decode().split('\r\n')[0].split(' ')[1]
-            # the path like /dummy/dog/, we want to only get 'dummy'
-            # so we need to strip slashes from the left or right side of the path.
-            # and then get the first string from the remaining path.
+            path = req.decode().split("\r\n")[0].split(" ")[1]
             handler = handlers[path.strip('/').split('/')[0]]
-            # if the handler is 'dummy', then we will call dummy().
             response = handler()
         except KeyError:
             response = response_404

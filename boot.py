@@ -5,7 +5,6 @@ gc.collect()
 
 import network
 import time
-import machine
 
 sta_if = network.WLAN(network.STA_IF); sta_if.active(True)
 
@@ -36,3 +35,7 @@ for connection in connections:
         break
     else:
         print("Connection could not be made.\n")
+
+
+if sta_if.isconnected():
+    print("Connected as: {}".format(sta_if.ifconfig()[0]))

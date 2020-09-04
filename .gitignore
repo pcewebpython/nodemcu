@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
-*passwords.txt
+passwords.txt
+**passwords.txt
 **/.idea/*
 __pycache__/
 *.py[cod]

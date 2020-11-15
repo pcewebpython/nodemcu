@@ -18,7 +18,7 @@ except OSError:
 
 
 for connection in connections:
-    station, password = connection.split()
+    station, password = connection.split(", ")
 
     print("Connecting to {}.".format(station))
 

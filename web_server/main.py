@@ -1,7 +1,17 @@
+# Stella Kim
+# Assignment 9: Internet of Things
+
+import machine
+import ntptime
+import utime
+from machine import RTC
+from time import sleep
+
 try:
     import usocket as socket
 except:
     import socket
+
 
 response_404 = """HTTP/1.0 404 NOT FOUND
 
@@ -18,63 +28,86 @@ response_template = """HTTP/1.0 200 OK
 %s
 """
 
-import machine
-import ntptime, utime
-from machine import RTC
-from time import sleep
 
-try:
-    seconds = ntptime.time()
-except:
-    seconds = 0
-
+seconds = ntptime.time()
 rtc = RTC()
 rtc.datetime(utime.localtime(seconds))
+pin = machine.Pin(16, machine.Pin.OUT)
+switch_pin = machine.Pin(10, machine.Pin.IN)
+adc = machine.ADC(0)
+
 
 def time():
     body = """<html>
-<body>
-<h1>Time</h1>
-<p>%s</p>
-</body>
-</html>
-""" % str(rtc.datetime())
+ <body>
+ <h1>Time</h1>
+ <p>%s</p>
+ </body>
+ </html>
+    """ % str(rtc.datetime())
 
     return response_template % body
+
 
 def dummy():
-    body = "This is a dummy endpoint"
+    body = 'This is a dummy endpoint'
 
     return response_template % body
 
-pin = machine.Pin(10, machine.Pin.IN)
+
+def light_on():
+    pin.value(1)
+    body = 'You turned a light on!'
+    return response_template % body
+
+
+def light_off():
+    pin.value(0)
+    body = 'You turned a light off!'
+    return response_template % body
+
+
+def switch():
+    body = '{state: ' + str(switch_pin.value()) + '}'
+    return response_template % body
+
+
+def light():
+    body = '{value: ' + str(adc.read()) + '}'
+    return response_template % body
+
 
 handlers = {
     'time': time,
     'dummy': dummy,
+    'light_on': light_on,
+    'light_off': light_off,
+    'switch': switch,
+    'light': light,
 }
+
 
 def main():
     s = socket.socket()
-    ai = socket.getaddrinfo("0.0.0.0", 8080)
+    ai = socket.getaddrinfo('0.0.0.0', 8080)
     addr = ai[0][-1]
 
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     s.bind(addr)
     s.listen(5)
-    print("Listening, connect your browser to http://<this_host>:8080")
+    print('Listening, connect your browser to http://<this_host>:8080/')
 
     while True:
         res = s.accept()
         client_s = res[0]
         client_addr = res[1]
         req = client_s.recv(4096)
-        print("Request:")
+        print('Request:')
         print(req)
 
         try:
-            path = req.decode().split("\r\n")[0].split(" ")[1]
+            path = req.decode().split('\r\n')[0].split(' ')[1]
             handler = handlers[path.strip('/').split('/')[0]]
             response = handler()
         except KeyError:
@@ -83,9 +116,10 @@ def main():
             response = response_500
             print(str(e))
 
-        client_s.send(b"\r\n".join([line.encode() for line in response.split("\n")]))
+        client_s.send(b'\r\n'.join([line.encode() for line in response.split('\n')]))
 
         client_s.close()
         print()
+
 
 main()

@@ -47,11 +47,57 @@ def dummy():
 
     return response_template % body
 
-pin = machine.Pin(10, machine.Pin.IN)
+led = machine.Pin(9, machine.Pin.OUT)
+
+def light_on():
+    led.value(1)
+    body = "You turned the light on!"
+    return response_template % body
+
+def light_off():
+    led.value(0)
+    body = "You turned the light off!"
+    return response_template % body
+
+def switch():
+    body = "{{state:{}}}".format(machine.Pin(10, machine.Pin.IN).value())
+    return response_template % body
+
+adc = machine.ADC(0)
+
+def light():
+    body = "{{value:{}}}".format(adc.read())
+    return response_template % body
+
+pwm = machine.Pin(13)
+pwm = machine.PWM(pwm)
+pwm.duty(1024)
+
+def bright():
+    pwm.duty(0)
+    body = "The LED is bright."
+    return response_template % body
+
+def medium_bright():
+    pwm.duty(500)
+    body = "The LED is medium brightness."
+    return response_template % body
+
+def dim():
+    pwm.duty(1000)
+    body = "The LED is dim."
+    return response_template % body
 
 handlers = {
     'time': time,
     'dummy': dummy,
+    'light_on': light_on,
+    'light_off': light_off,
+    'switch': switch,
+    'light': light,
+    'bright': bright,
+    'medium_bright': medium_bright,
+    'dim': dim,
 }
 
 def main():
